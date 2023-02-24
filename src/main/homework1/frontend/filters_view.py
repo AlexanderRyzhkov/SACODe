@@ -4,6 +4,7 @@ from src.main.homework1.frontend.create_filter_view import CreateFilterView
 from src.main.homework1.frontend.saved_view import SavedView
 from src.main.homework1.frontend.two_pictures_view import TwoPicturesView
 from src.main.homework1.frontend.utils import center
+from src.main.homework1.backend import computing, folder_computing
 
 
 class FiltersView(QMainWindow):
@@ -27,6 +28,8 @@ class FiltersView(QMainWindow):
         self.setWindowTitle("Filters")
         center(self)
         self.setCentralWidget(configure_main_widget())
+        self.is_file_mode = is_file_mode
+        self.p = p
 
     def configure_menu_layout(self, filters_list_layout, previous_view):
         filters_matrices_list = []
@@ -34,11 +37,11 @@ class FiltersView(QMainWindow):
         menu_layout = QVBoxLayout()
         menu_layout.addLayout(
             self.configure_change_filters_layout(filters_matrices_list, filters_list_layout))
-        menu_layout.addLayout(self.configure_main_buttons_layout(previous_view))
+        menu_layout.addLayout(self.configure_main_buttons_layout(previous_view, filters_matrices_list))
 
         return menu_layout
 
-    def configure_main_buttons_layout(self, previous_view):
+    def configure_main_buttons_layout(self, previous_view, filters_matrices_list):
         def back_button_click():
             previous_view.show()
             self.hide()
@@ -47,13 +50,19 @@ class FiltersView(QMainWindow):
         back_button.clicked.connect(back_button_click)
 
         main_buttons_layout = QVBoxLayout()
-        main_buttons_layout.addLayout(self.configure_computing_buttons_layout())
+        main_buttons_layout.addLayout(self.configure_computing_buttons_layout(previous_view, filters_matrices_list))
         main_buttons_layout.addWidget(back_button)
 
         return main_buttons_layout
 
-    def configure_computing_buttons_layout(self):
+    def configure_computing_buttons_layout(self, previous_view, filters_matrices_list):
         def display_result(on_cpu):
+            if self.is_file_mode:
+                result = computing.compute(self.p, filters_matrices_list, on_cpu)
+                TwoPicturesView(previous_view, result[0][0], result[0][1]).show()
+            else:
+                folder_computing.compute(self.p, filters_matrices_list, on_cpu)
+                SavedView(previous_view).show()
             self.hide()
 
         def cpu_button_click():

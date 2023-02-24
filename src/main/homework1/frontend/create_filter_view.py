@@ -6,6 +6,7 @@ from src.main.homework1.frontend.utils import center
 class CreateFilterView(QMainWindow):
     def __init__(self, previous_view, filters_matrices_list, filters_list_layout):
         def configure_main_widget():
+            self.filter_matrix_layout = QVBoxLayout()
             main_widget = QWidget()
             main_widget.setLayout(self.configure_main_layout(previous_view, filters_matrices_list, filters_list_layout))
 
@@ -17,8 +18,6 @@ class CreateFilterView(QMainWindow):
         self.setCentralWidget(configure_main_widget())
 
     def configure_main_layout(self, previous_view, filters_matrices_list, filters_list_layout):
-        filter_matrix_layout = QVBoxLayout()
-
         main_layout = QHBoxLayout()
         main_layout.addLayout(self.configure_filter_matrix_info_layout())
         main_layout.addLayout(
@@ -28,11 +27,11 @@ class CreateFilterView(QMainWindow):
 
     def configure_menu_layout(self, previous_view, filters_matrices_list, filters_list_layout):
         admit_button = QPushButton("Admit")
-        admit_button.clicked.connect(
+        admit_button.clicked.connect(lambda:
             self.admit_button_click(previous_view, filters_matrices_list, filters_list_layout))
 
         back_button = QPushButton("Back")
-        back_button.clicked.connect(self.back_button_click((previous_view)))
+        back_button.clicked.connect(lambda: self.back_button_click((previous_view)))
 
         menu_layout = QVBoxLayout()
         menu_layout.addLayout(self.configure_change_dimensions_layout())
@@ -65,9 +64,8 @@ class CreateFilterView(QMainWindow):
         return dimensions_parameters_layout
 
     def init_filter_matrix(self, n, m):
-        filter_matrix_layout = QVBoxLayout()
-        for i in range(filter_matrix_layout.count()):
-            cur_line = filter_matrix_layout.itemAt(i)
+        for i in range(self.filter_matrix_layout.count()):
+            cur_line = self.filter_matrix_layout.itemAt(i)
 
             for j in range(cur_line.count()):
                 cur_line.itemAt(j).widget().deleteLater()
@@ -83,9 +81,9 @@ class CreateFilterView(QMainWindow):
 
                 horizontal_layout.addWidget(element)
 
-            filter_matrix_layout.addLayout(horizontal_layout)
+            self.filter_matrix_layout.addLayout(horizontal_layout)
 
-        return filter_matrix_layout
+        return self.filter_matrix_layout
 
     def configure_filter_matrix_info_layout(self):
         label = QLabel()
@@ -99,10 +97,9 @@ class CreateFilterView(QMainWindow):
 
     def admit_button_click(self, previous_view, filters_matrices_list, filters_list_layout):
         result = []
-        filter_matrix_layout = QVBoxLayout()
         correct = True
-        for i in range(filter_matrix_layout.count()):
-            horizontal = filter_matrix_layout.itemAt(i)
+        for i in range(self.filter_matrix_layout.count()):
+            horizontal = self.filter_matrix_layout.itemAt(i)
             line = []
             for j in range(horizontal.count()):
                 try:
@@ -127,7 +124,6 @@ class CreateFilterView(QMainWindow):
 
     def change_dimensions_button_click(self, height, width):
         correct = True
-        filter_matrix_layout = QVBoxLayout()
         try:
             h = int(height.text())
             w = int(width.text())
@@ -140,8 +136,8 @@ class CreateFilterView(QMainWindow):
             correct = False
 
         if not correct:
-            width.setText(f"{filter_matrix_layout.itemAt(0).count()}")
-            height.setText(f"{filter_matrix_layout.count()}")
+            width.setText(f"{self.filter_matrix_layout.itemAt(0).count()}")
+            height.setText(f"{self.filter_matrix_layout.count()}")
 
     def configure_change_dimensions_layout(self):
         width = QLineEdit()
@@ -154,7 +150,7 @@ class CreateFilterView(QMainWindow):
         description.setText("Change matrix dimensions")
 
         change_dimensions_button = QPushButton("Change dimensions")
-        change_dimensions_button.clicked.connect(self.change_dimensions_button_click(height, width))
+        change_dimensions_button.clicked.connect(lambda: self.change_dimensions_button_click(height, width))
 
         change_dimensions_layout = QVBoxLayout()
         change_dimensions_layout.addWidget(description)
