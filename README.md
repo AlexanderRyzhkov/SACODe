@@ -34,7 +34,3 @@ Task 3:
 
 Task 4:
 Сравнить производительность полученных реализаций, составить отчёт.
-
-To start application in root of repository run:
-pip install -r requirements.txt
-python3 -m src.main.homework1.run
